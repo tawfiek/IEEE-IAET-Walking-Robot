@@ -20,12 +20,13 @@ int speed = 0;
 
 SoftwareSerial bluetooth (rxPin, txPin);
 
-
+uint16_t encoderl,encoderr;
 void setup() {
-  Serial.begin(4800);
+  Serial.begin(9600);
 
   bluetooth.begin(9600);
-
+ pinMode(13,OUTPUT);
+ pinMode(12,OUTPUT);
   while (!Serial || !bluetooth){
     // waiting for connection 
   }
@@ -38,6 +39,33 @@ void setup() {
   pinMode(inA2 , OUTPUT);
   pinMode(inB1 , OUTPUT); 
   pinMode(inB2 , OUTPUT);
+  bool donel=false,doner=false;
+  do{
+    encoderl=analogRead(0);
+    encoderr=analogRead(1);
+    if(encoderr<512)
+      doner=true;
+if(encoderl<512)
+donel=true;
+    if(!donel)
+        {analogWrite(inA1 , 0);
+        analogWrite(inA2, 200);
+        }
+        else
+        {
+        analogWrite(inA1 , 0);
+        analogWrite(inA2, 0);
+        }
+        if(!doner){
+        analogWrite(inB1 , 0);    
+        analogWrite(inB2, 200) ;
+        } 
+        else
+        {
+          analogWrite(inB1 , 0);    
+        analogWrite(inB2, 0) ;
+        }
+  }while(!donel || !doner);
 }
 
 void loop() {
@@ -53,12 +81,28 @@ void loop() {
         analogWrite(inB2, speed) ; 
         break;   
       }
+       case 'B' :  {
+        Serial.write("Go Fowrord");
+        analogWrite(inA1 , speed);
+        analogWrite(inA2, 0);
+        analogWrite(inB1 , speed);    
+        analogWrite(inB2, 0) ; 
+        break;   
+      }
       case 'R' :  { 
         Serial.write("Go Rigth");
+        analogWrite(inA1 , 0);
+        analogWrite(inA2, 0);
+        analogWrite(inB1 , speed);    
+        analogWrite(inB2, 0) ; 
         break;   
       }
       case 'L' :  { 
         Serial.write("Go Left");
+        analogWrite(inA1 , speed);
+        analogWrite(inA2, 0);
+        analogWrite(inB1 , 0);    
+        analogWrite(inB2, 0) ; 
         break;   
       }
     
@@ -127,4 +171,18 @@ void loop() {
   }
 
 }
+
+encoderl=analogRead(0);
+encoderr=analogRead(1);
+if(encoderr<512)
+digitalWrite(13,HIGH);
+else 
+digitalWrite(13,LOW);
+if(encoderl<512)
+digitalWrite(12,HIGH);
+else 
+digitalWrite(12,LOW);
+
+
+
 }
